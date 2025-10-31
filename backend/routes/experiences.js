@@ -1,9 +1,22 @@
 import express from "express";
-import { getExperiences, getExperienceById } from "../controller/places.js";
+import {
+  createExperience,
+  updateExperience,
+  deleteExperience,
+  getExperiences,
+  getExperienceById,
+  createBooking,
+  validatePromo,
+} from "../controllers/experienceController.js";
 
 const router = express.Router();
 
+// Experience CRUD
+router.post("/", createExperience);
 router.get("/", getExperiences);
 router.get("/:id", getExperienceById);
+router.put("/:id", updateExperience);
+router.delete("/:id", deleteExperience);
 
 export default router;
+

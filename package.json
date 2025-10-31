@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "concurrently": "^9.2.0",
+    "next": "^15.4.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd backend && nodemon index.js",
+    "client": "cd frontend && npm run dev"
+  }
+}

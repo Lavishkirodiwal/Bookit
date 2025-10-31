@@ -19,7 +19,7 @@ export default function ExperienceCard({ experience, onAddToCart }) {
     >
       {/* Image Section */}
         <div className="relative w-full h-56 overflow-hidden">
-  <img
+  <Image 
     src={
       experience.images && experience.images.length > 0
         ? experience.images[0]
@@ -86,3 +86,4 @@ export default function ExperienceCard({ experience, onAddToCart }) {
     </div>
   );
 }
+

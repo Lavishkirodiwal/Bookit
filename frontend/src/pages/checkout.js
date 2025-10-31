@@ -7,6 +7,7 @@ export default function Checkout() {
   const router = useRouter();
   const [cart, setCart] = useCart();
   const [form, setForm] = useState({ name: "", email: "" });
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   if (!cart || cart.length === 0) {
     return (
@@ -45,7 +46,7 @@ export default function Checkout() {
     }));
 
     try {
-      const res = await fetch("http://localhost:5000/api/booking", {
+      const res = await fetch(`${API_URL}/api/booking", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookings),
@@ -116,3 +117,4 @@ export default function Checkout() {
     </>
   );
 }
+

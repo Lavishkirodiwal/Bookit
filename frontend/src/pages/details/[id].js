@@ -17,10 +17,10 @@ export default function Details() {
 
   const [cart, setCart] = useCart();
   const taxRate = 0.1;
-
+ const API_URL = process.env.NEXT_PUBLIC_API_URL;
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:5000/api/experiences/${id}`)
+    fetch(`${API_URL}/api/experiences/${id}`)
         .then(res => res.json())
         .then(data => {
           setExperience(data);
@@ -171,5 +171,6 @@ export default function Details() {
     </>
   );
 }
+
 
 

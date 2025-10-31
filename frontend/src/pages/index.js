@@ -10,10 +10,10 @@ export default function Home() {
   const [experiences, setExperiences] = useState([]);
   const [cart, setCart] = useCart();
   const [loading, setLoading] = useState(true);
-
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   // Fetch experiences from API
   useEffect(() => {
-    fetch("http://localhost:10000/api/experiences")
+    fetch(`${apiUrl}/api/experiences`)
       .then((res) => res.json())
       .then((data) => {
         setExperiences(data);
@@ -66,4 +66,5 @@ export default function Home() {
     </>
   );
 }
+
 

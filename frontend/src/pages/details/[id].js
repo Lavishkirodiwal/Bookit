@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Header from "@/components/header";
 import { useCart } from "@/context/CartContext";
+import Image from 'next/image';
 
 export default function Details() {
   const router = useRouter();
@@ -170,4 +171,5 @@ export default function Details() {
     </>
   );
 }
+
 

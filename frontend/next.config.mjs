@@ -1,4 +1,8 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  experimental: {
+    appDir: false,
+  },
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+};
 
-export default nextConfig;
+module.exports = nextConfig;

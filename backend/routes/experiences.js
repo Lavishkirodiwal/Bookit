@@ -7,7 +7,7 @@ import {
   getExperienceById,
   createBooking,
   validatePromo,
-} from "../controllers/experienceController.js";
+} from "../controller/places.js";
 
 const router = express.Router();
 
@@ -19,4 +19,5 @@ router.put("/:id", updateExperience);
 router.delete("/:id", deleteExperience);
 
 export default router;
+
 

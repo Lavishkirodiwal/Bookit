@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // other config...
+  /** @type {import('next').NextConfig} */
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'www.ottsworld.com',
+        pathname: '/**',
+      },
+      // add more domains if needed
+    ],
+  },//other
 };
 
 export default nextConfig;

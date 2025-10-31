@@ -46,7 +46,7 @@ export default function Checkout() {
     }));
 
     try {
-      const res = await fetch(`${API_URL}/api/booking", {
+      const res = await fetch(`${API_URL}/api/booking`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(bookings),
@@ -117,4 +117,5 @@ export default function Checkout() {
     </>
   );
 }
+
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 
 const CreateExperience = () => {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -16,15 +15,15 @@ const CreateExperience = () => {
 
   const [experiences, setExperiences] = useState([]);
 
-  // Fetch experiences from API
+  // Fetch existing experiences
   useEffect(() => {
     const fetchExperiences = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/experiences`);
-        const data = await response.json();
+        const res = await fetch(`${API_URL}/api/experiences`);
+        const data = await res.json();
         setExperiences(data);
-      } catch (error) {
-        console.error("Error fetching experiences:", error);
+      } catch (err) {
+        console.error("Error fetching experiences:", err);
       }
     };
 
@@ -38,13 +37,30 @@ const CreateExperience = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${API_URL}/api/experiences`, formData);
+      const res = await fetch(`${API_URL}/api/experiences`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Failed to create experience");
+
+      const newExperience = await res.json();
       alert("Experience created successfully!");
-      console.log(response.data);
-      // Optionally refresh the experience list
-      setExperiences([...experiences, response.data]);
-    } catch (error) {
-      console.error(error);
+      setExperiences([...experiences, newExperience]);
+      setFormData({
+        title: "",
+        description: "",
+        location: "",
+        price: "",
+        about: "",
+        images: [],
+        availableDates: [{ date: "", timeSlots: [""] }],
+      });
+    } catch (err) {
+      console.error(err);
       alert("Error creating experience");
     }
   };
@@ -52,6 +68,7 @@ const CreateExperience = () => {
   return (
     <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded-lg">
       <h2 className="text-2xl font-bold mb-6 text-center">Create New Experience</h2>
+
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -103,9 +120,10 @@ const CreateExperience = () => {
         </button>
       </form>
 
-      {/* Optional: List of experiences */}
+      {/* Existing experiences */}
       <div className="mt-10">
         <h3 className="text-xl font-semibold mb-4">Existing Experiences</h3>
+        {experiences.length === 0 && <p className="text-gray-500">No experiences found.</p>}
         {experiences.map((exp) => (
           <div key={exp._id} className="p-4 border rounded mb-2">
             <h4 className="font-bold">{exp.title}</h4>

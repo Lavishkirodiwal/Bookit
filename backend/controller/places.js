@@ -3,6 +3,43 @@ import Experiences from "../models/experiences.js";
 import Booking from "../models/booking.js";
 import Promo from "../models/promo.js";
 
+export const createExperience = async (req, res) => {
+  try {
+    const newExperience = new Experience(req.body);
+    const savedExperience = await newExperience.save();
+    res.status(201).json(savedExperience);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+// Update experience by ID
+export const updateExperience = async (req, res) => {
+  try {
+    const updatedExperience = await Experience.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedExperience)
+      return res.status(404).json({ message: "Experience not found" });
+    res.status(200).json(updatedExperience);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+};
+
+// Delete experience by ID
+export const deleteExperience = async (req, res) => {
+  try {
+    const deletedExperience = await Experience.findByIdAndDelete(req.params.id);
+    if (!deletedExperience)
+      return res.status(404).json({ message: "Experience not found" });
+    res.status(200).json({ message: "Experience deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 export const getExperiences = async (req, res) => {
   try {
     const experiences = await Experiences.find(); // fetch all experiences from DB
@@ -87,4 +124,5 @@ export const validatePromo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 

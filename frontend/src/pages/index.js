@@ -13,7 +13,7 @@ export default function Home() {
 
   // Fetch experiences from API
   useEffect(() => {
-    fetch("http://localhost:5000/api/experiences")
+    fetch("http://localhost:10000/api/experiences")
       .then((res) => res.json())
       .then((data) => {
         setExperiences(data);
@@ -66,3 +66,4 @@ export default function Home() {
     </>
   );
 }
+

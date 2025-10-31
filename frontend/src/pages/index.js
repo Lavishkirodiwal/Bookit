@@ -10,10 +10,10 @@ export default function Home() {
   const [experiences, setExperiences] = useState([]);
   const [cart, setCart] = useCart();
   const [loading, setLoading] = useState(true);
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
   // Fetch experiences from API
   useEffect(() => {
-    fetch(`${apiUrl}/api/experiences`)
+    fetch(`${API_URL}/api/experiences`)
       .then((res) => res.json())
       .then((data) => {
         setExperiences(data);
@@ -66,5 +66,6 @@ const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     </>
   );
 }
+
 
 

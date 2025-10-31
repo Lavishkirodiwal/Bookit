@@ -1,17 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  /** @type {import('next').NextConfig} */
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'www.ottsworld.com',
-        pathname: '/**',
-      },
-      // add more domains if needed
-    ],
-  },//other
+    domains: ['media.tacdn.com'], // add all external domains you use
+  },
 };
 
 export default nextConfig;
+

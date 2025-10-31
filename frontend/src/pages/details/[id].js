@@ -81,7 +81,7 @@ export default function Details() {
 
       <div className="max-w-6xl mx-auto px-6 py-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <img
+          <Image 
             src={experience.images?.[0] || "/default.jpg"}
             alt={experience.title}
             className="w-full h-72 object-cover rounded-xl"
@@ -170,3 +170,4 @@ export default function Details() {
     </>
   );
 }
+

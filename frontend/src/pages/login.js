@@ -9,9 +9,9 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const res = await fetch('http://localhost:5000/api/auth/login', {
+      const API_URL = process.env.NEXT_PUBLIC_API_URL; // backend URL
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -25,11 +25,9 @@ export default function Login() {
       const data = await res.json();
       localStorage.setItem('token', data.token);
       localStorage.setItem('role', data.user.role);
-      if (data.user.role === 'admin') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/');
-      }
+
+      if (data.user.role === 'admin') router.push('/admin/dashboard');
+      else router.push('/');
     } catch (err) {
       setError(err.message);
     }
@@ -38,7 +36,9 @@ export default function Login() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-white px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center mb-6 text-blue-700">Sign in to Blinkup</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-blue-700">
+          Sign in to BookIt
+        </h1>
 
         {error && (
           <p className="text-red-600 text-sm mb-4 text-center">{error}</p>
@@ -46,28 +46,32 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
             <input
               id="email"
               type="email"
+              placeholder="you@example.com"
               className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              Experienceholder="you@example.com"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               id="password"
               type="password"
+              placeholder="••••••••"
               className="w-full mt-1 px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-200"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              Experienceholder="••••••••"
             />
           </div>
 

@@ -29,52 +29,57 @@ const CreateExperience = () => {
   };
 
   return (
-    <div>
-      <h2>Create New Experience</h2>
-      <form onSubmit={handleSubmit}>
+    <div className="max-w-2xl mx-auto mt-10 p-6 bg-white shadow rounded-lg">
+      <h2 className="text-2xl font-bold mb-6 text-center">Create New Experience</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
           name="title"
           placeholder="Title"
           value={formData.title}
           onChange={handleChange}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-        <br />
         <textarea
           name="description"
           placeholder="Description"
           value={formData.description}
           onChange={handleChange}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-        <br />
         <input
           type="text"
           name="location"
           placeholder="Location"
           value={formData.location}
           onChange={handleChange}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-        <br />
         <input
           type="number"
           name="price"
           placeholder="Price"
           value={formData.price}
           onChange={handleChange}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
           required
         />
-        <br />
         <textarea
           name="about"
           placeholder="About"
           value={formData.about}
           onChange={handleChange}
+          className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
-        <br />
-        <button type="submit">Create Experience</button>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white p-3 rounded-md hover:bg-blue-600 transition"
+        >
+          Create Experience
+        </button>
       </form>
     </div>
   );

@@ -59,31 +59,40 @@ export const getExperienceById = async (req, res) => {
   }
 };
 
-// Booking creation with promo handling
 export const createBooking = async (req, res) => {
   try {
-    const { experienceId, quantity, promoCode } = req.body;
-    const experience = await Experience.findById(experienceId);
-    if (!experience) return res.status(404).json({ message: "Experience not found" });
+    const bookingsData = Array.isArray(req.body) ? req.body : [req.body];
+    const savedBookings = [];
 
-    const subtotal = experience.price * quantity;
-    const taxRate = 0.1;
-    const tax = subtotal * taxRate;
+    for (const bookingData of bookingsData) {
+      const { experienceId, persons, promoCode } = bookingData;
 
-    let discount = 0;
-    if (promoCode) {
-      const promo = await Promo.findOne({ code: promoCode, valid: true });
-      if (promo) discount = promo.discount;
+      const experience = await Experience.findById(experienceId);
+      if (!experience) {
+        return res.status(404).json({ message: "Experience not found", experienceId });
+      }
+
+      const subtotal = experience.price * persons;
+      const taxRate = 0.1;
+      const tax = subtotal * taxRate;
+
+      let discount = 0;
+      if (promoCode) {
+        const promo = await Promo.findOne({ code: promoCode, valid: true });
+        if (promo) discount = promo.discount;
+      }
+
+      const discountAmount = (subtotal + tax) * (discount / 100);
+      const total = subtotal + tax - discountAmount;
+
+      const booking = new Booking({ ...bookingData, subtotal, tax, total });
+      await booking.save();
+      savedBookings.push(booking);
     }
 
-    const discountAmount = (subtotal + tax) * (discount / 100);
-    const total = subtotal + tax - discountAmount;
-
-    const booking = new Booking({ ...req.body, subtotal, tax, total });
-    await booking.save();
-
-    res.status(201).json({ message: "Booking successful", booking });
+    res.status(201).json({ message: "Bookings successful", bookings: savedBookings });
   } catch (error) {
+    console.error(error);
     res.status(400).json({ message: error.message });
   }
 };
@@ -103,3 +112,4 @@ export const validatePromo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+

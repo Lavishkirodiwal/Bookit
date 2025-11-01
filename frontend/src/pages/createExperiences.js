@@ -20,7 +20,7 @@ const CreateExperience = () => {
   const addDateSlot = () => {
     setFormData({
       ...formData,
-      availableDates: [...formData.availableDates, { date: "", timeSlots: [""] }],
+      availableDates: [...formData.availableDates, { dateSlots: "", timeSlots: [""] }],
     });
   };
 
@@ -34,7 +34,7 @@ const CreateExperience = () => {
   // Handle change in date field
   const handleDateChange = (index, value) => {
     const dates = [...formData.availableDates];
-    dates[index].date = value;
+    dates[index].dateSlots = value;
     setFormData({ ...formData, availableDates: dates });
   };
 

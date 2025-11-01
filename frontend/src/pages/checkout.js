@@ -36,7 +36,6 @@ export default function Checkout() {
   const grandTotal = cart.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
   const handleBooking = async () => {
-  // Validate form: require name/email if missing
   if (!form.name || !form.email) {
     alert("Please enter your name and email to continue.");
     return;
@@ -58,14 +57,13 @@ export default function Checkout() {
       body: JSON.stringify(bookings),
     });
 
-    const data = await res.json();
+    const data = await res.json(); // parse response JSON
 
     if (res.ok) {
-      // Booking created successfully
       setCart([]); // clear cart
-      router.push(`/result?id=${data.booking._id}`);
+      // Redirect to result page using the first booking ID
+      router.push(`/result?id=${data.bookings[0]._id}`);
     } else {
-      // Booking failed
       alert(data.message || "Booking failed");
     }
   } catch (error) {
@@ -73,6 +71,7 @@ export default function Checkout() {
     alert("Something went wrong with booking");
   }
 };
+
   
   return (
     <>
@@ -136,6 +135,7 @@ export default function Checkout() {
     </>
   );
 }
+
 
 
 

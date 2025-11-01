@@ -36,45 +36,44 @@ export default function Checkout() {
   const grandTotal = cart.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
   const handleBooking = async () => {
-    // Validate form: require name/email if missing
-    if (!form.name || !form.email) {
-      alert("Please enter your name and email to continue.");
-      return;
+  // Validate form: require name/email if missing
+  if (!form.name || !form.email) {
+    alert("Please enter your name and email to continue.");
+    return;
+  }
+
+  const bookings = cart.map(item => ({
+    name: item.name || form.name,
+    email: item.email || form.email,
+    persons: item.quantity,
+    experienceId: item._id,
+    date: item.date,
+    time: item.time,
+  }));
+
+  try {
+    const res = await fetch(`${API_URL}/api/booking`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(bookings),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      // Booking created successfully
+      setCart([]); // clear cart
+      router.push(`/result?id=${data.booking._id}`);
+    } else {
+      // Booking failed
+      alert(data.message || "Booking failed");
     }
-
-    const bookings = cart.map(item => ({
-      name: item.name || form.name,
-      email: item.email || form.email,
-      persons: item.quantity,
-      experienceId: item._id,
-      date: item.date,
-      time: item.time,
-    }));
-
-    try {
-      const res = await fetch(`${API_URL}/api/booking`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(bookings),
-      });
- if (res.ok) {
-  // After booking is created
-const data = await res.json();
-setCart([]);
-
-// redirect to Result page with booking ID
-router.push(`/result?id=${data.booking._id}`);
-  });
-}else {
-        const data = await res.json();
-        alert(data.message || "Booking failed");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("Something went wrong with booking");
-    }
-  };
-
+  } catch (error) {
+    console.error(error);
+    alert("Something went wrong with booking");
+  }
+};
+  
   return (
     <>
       <Header cartCount={cart.length} />
@@ -137,6 +136,7 @@ router.push(`/result?id=${data.booking._id}`);
     </>
   );
 }
+
 
 
 

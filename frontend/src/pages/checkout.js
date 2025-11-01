@@ -58,11 +58,12 @@ export default function Checkout() {
         body: JSON.stringify(bookings),
       });
  if (res.ok) {
-  const data = await res.json();
-  setCart([]); // clear cart
-  router.push({
-    pathname: "/result",
-    query: { booking: JSON.stringify(data.booking) } // pass booking as query
+  // After booking is created
+const data = await res.json();
+setCart([]);
+
+// redirect to Result page with booking ID
+router.push(`/result?id=${data.booking._id}`);
   });
 }else {
         const data = await res.json();
@@ -136,6 +137,7 @@ export default function Checkout() {
     </>
   );
 }
+
 
 
 

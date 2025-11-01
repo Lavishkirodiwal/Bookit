@@ -8,7 +8,7 @@ const CreateExperience = () => {
     price: "",
     about: "",
     images: [""], // can add multiple image URLs dynamically later
-    availableDates: [], // initially empty
+    availableDates: [""], // initially empty
   });
 
   // Handle text inputs
@@ -68,6 +68,7 @@ const CreateExperience = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
+      console.log("Submitting formData:", JSON.stringify(formData, null, 2));
       const data = await response.json();
       if (response.ok) {
         alert("Experience created successfully!");

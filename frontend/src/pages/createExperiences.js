@@ -8,7 +8,7 @@ const CreateExperience = () => {
     price: "",
     about: "",
     images: [""], // can add multiple image URLs dynamically later
-    availableDates: [""], // initially empty
+    availableDates: [], // initially empty
   });
 
   // Handle text inputs

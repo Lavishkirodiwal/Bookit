@@ -58,9 +58,11 @@ export default function Checkout() {
         body: JSON.stringify(bookings),
       });
       if (res.ok) {
-        setCart([]); // clear cart
-        router.push("/result");
-      } else {
+  const data = await res.json();
+  setCart([]); // clear cart
+  localStorage.setItem("lastBooking", JSON.stringify(data.booking || data.bookings));
+  router.push("/result");
+}else {
         const data = await res.json();
         alert(data.message || "Booking failed");
       }
@@ -132,6 +134,7 @@ export default function Checkout() {
     </>
   );
 }
+
 
 
 

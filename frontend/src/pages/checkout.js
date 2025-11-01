@@ -57,11 +57,11 @@ export default function Checkout() {
       body: JSON.stringify(bookings),
     });
 
-    const data = await res.json(); // parse response JSON
+    const data = await res.json();
 
     if (res.ok) {
       setCart([]); // clear cart
-      // Redirect to result page using the first booking ID
+      // Redirect to result page using first booking ID
       router.push(`/result?id=${data.bookings[0]._id}`);
     } else {
       alert(data.message || "Booking failed");
@@ -71,6 +71,7 @@ export default function Checkout() {
     alert("Something went wrong with booking");
   }
 };
+
 
   
   return (
@@ -135,6 +136,7 @@ export default function Checkout() {
     </>
   );
 }
+
 
 
 

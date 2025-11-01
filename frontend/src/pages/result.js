@@ -1,25 +1,46 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import jsPDF from "jspdf";
 
-export default function Result({ booking }) {
-  const [ticket, setTicket] = useState(null);
+export default function Result() {
+  const router = useRouter();
+  const { id } = router.query; // booking ID from URL
+  const [booking, setBooking] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Format booking ID: e.g., TRV-2025-1029-001 from _id
-  const bookingId = booking?._id
-    ? `TRV-${new Date().getFullYear()}-${booking._id.slice(0, 4)}-${booking._id.slice(-3)}`
-    : "TRV-2025-1029-001";
+  // Fetch booking from backend
+  useEffect(() => {
+    if (!id) return;
 
-  const {
-    experience = {},
-    date,
-    time,
-    persons,
-    total,
-  } = booking || {};
+    const fetchBooking = async () => {
+      try {
+        const res = await fetch(`/api/booking/${id}`);
+        if (!res.ok) throw new Error("Booking not found");
+        const data = await res.json();
+        setBooking(data.booking);
+      } catch (error) {
+        console.error(error);
+        setBooking(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchBooking();
+  }, [id]);
+
+  if (loading) return <p className="text-center mt-10">Loading booking...</p>;
+  if (!booking) return <p className="text-center mt-10 text-red-500">Booking not found</p>;
+
+  // Generate formatted booking ID
+  const bookingId = `TRV-${new Date().getFullYear()}-${booking._id.slice(0, 4)}-${booking._id.slice(-3)}`;
+
+  const { experience = {}, date, time, persons, total } = booking;
+
+  // Download ticket as PDF
   const downloadTicket = () => {
     const doc = new jsPDF();
 
@@ -87,7 +108,7 @@ export default function Result({ booking }) {
         </div>
       </div>
 
-      {/* Optional: Related Experiences / Suggestions */}
+      {/* Optional: Related Experiences */}
       <div className="max-w-5xl w-full mt-10">
         <h2 className="text-xl font-bold mb-4 text-center">You Might Also Like</h2>
         {/* Render ExperienceCard components here */}

@@ -9,6 +9,12 @@ export default function Checkout() {
   const [form, setForm] = useState({ name: "", email: "" });
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+   // 🛒 Remove an item from the cart
+  const handleRemove = (index) => {
+    const updatedCart = cart.filter((_, i) => i !== index);
+    setCart(updatedCart);
+  };
+  
   if (!cart || cart.length === 0) {
     return (
       <>
@@ -80,6 +86,15 @@ export default function Checkout() {
               <p><b>Time:</b> {item.time}</p>
               <p><b>People:</b> {item.quantity}</p>
               <p><b>Total:</b> ${Number(item.total).toFixed(2)}</p>
+
+              
+              {/* 🗑️ Remove button */}
+              <button
+                onClick={() => handleRemove(index)}
+                className="mt-2 bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded transition"
+              >
+                Remove Experience
+              </button>
             </div>
           ))}
           <p className="text-lg font-bold mt-2">Grand Total: ${grandTotal.toFixed(2)}</p>
@@ -117,5 +132,6 @@ export default function Checkout() {
     </>
   );
 }
+
 
 

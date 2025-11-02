@@ -64,67 +64,87 @@ export default function Result() {
   // Royal-style PDF Ticket
   // =============================
   const downloadTicket = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: [550, 300] });
+  const doc = new jsPDF({
+    orientation: "landscape",
+    unit: "pt",
+    format: [700, 300],
+  });
 
-    // Background gold gradient
-    doc.setFillColor(255, 245, 200); // pale yellow
-    doc.rect(0, 0, 550, 300, "F");
+  // Colors
+  const gold = [230, 185, 80];
+  const black = [15, 15, 15];
+  const white = [255, 255, 255];
 
-    // Fort image (replace URL with your actual image)
-    const fortImageUrl = "fort.png";
-    doc.addImage(fortImageUrl, "PNG", 20, 20, 80, 80);
+  // ----- BASE SHAPES -----
+  doc.setFillColor(...black);
+  doc.rect(0, 0, 700, 300, "F");
 
-    // Header
-    doc.setFontSize(24);
-    doc.setTextColor(102, 51, 0); // dark brown
-    doc.text("🏰 Royal Booking Ticket 🏰", 275, 50, { align: "center" });
+  doc.setFillColor(...gold);
+  doc.rect(550, 0, 150, 300, "F");
 
-    // Divider
-    doc.setDrawColor(102, 51, 0);
-    doc.setLineWidth(1.5);
-    doc.line(20, 90, 530, 90);
+  doc.setFillColor(...gold);
+  doc.circle(550, 40, 20, "F");
+  doc.circle(550, 260, 20, "F");
 
-    // Booking ID Box
-    doc.setDrawColor(102, 51, 0);
-    doc.setLineWidth(1);
-    doc.rect(20, 95, 510, 25);
-    doc.setFontSize(12);
-    doc.setTextColor(51, 25, 0);
-    doc.text(`Booking ID: ${bookingId}`, 30, 112);
+  doc.setFillColor(...gold);
+  doc.circle(0, 40, 20, "F");
+  doc.circle(0, 260, 20, "F");
 
-    // Experience
-    doc.setFontSize(18);
-    doc.setTextColor(102, 51, 0);
-    doc.text(experience?.title || "N/A", 275, 145, { align: "center" });
-    doc.setFontSize(12);
-    doc.setTextColor(80);
-    doc.text(`Location: ${experience?.location || "N/A"}`, 275, 165, { align: "center" });
+  // ----- LEFT IMAGE -----
+  const img = "tick.png"; // your uploaded image/logo
+  doc.addImage(img, "PNG", 40, 80, 100, 100);
 
-    // Guest Details
-    doc.setFontSize(12);
-    doc.setTextColor(51, 25, 0);
-    doc.text(`Name: ${name || "-"}`, 30, 200);
-    doc.text(`Email: ${email || "-"}`, 30, 220);
-    doc.text(`Date: ${date || "-"}`, 275, 200, { align: "center" });
-    doc.text(`Time: ${time || "-"}`, 275, 220, { align: "center" });
-    doc.text(`People: ${persons || "-"}`, 500, 200);
+  // ----- TEXT -----
+  doc.setTextColor(...gold);
+  doc.setFontSize(12);
+  doc.text("🏰 ROYAL BOOKING TICKET 🏰", 180, 40); // header text updated
 
-    // Pricing
-    doc.setFontSize(14);
-    doc.setTextColor(0, 102, 51); // dark green
-    doc.text(`Total: $${total?.toFixed(2) || "-"}`, 500, 220);
+  // Date | Time top-right (before stub)
+  doc.text(`${date || booking?.date || "01 NOVEMBER"} | ${time || booking?.time || "18:00"}`, 470, 40);
 
-    // Decorative dashed tear line
-    doc.setLineDash([5, 5], 0);
-    doc.setDrawColor(102, 51, 0);
-    doc.line(20, 260, 530, 260);
-    doc.setLineDash([]);
-    doc.setFontSize(10);
-    doc.setTextColor(120);
-    doc.text("Present this ticket at the entrance.", 275, 280, { align: "center" });
+  // Event main title
+  doc.setTextColor(...white);
+  doc.setFontSize(28);
+  doc.text(experience?.title?.toUpperCase() || "EXPERIENCE TITLE", 350, 130, { align: "center" });
 
-    doc.save(`Booking-${bookingId}.pdf`);
-  };
+  // Subtitle removed / blank
+  doc.setTextColor(...gold);
+  doc.setFontSize(14);
+  doc.text("", 350, 155, { align: "center" }); // removed DJ/artist text
+
+  // Row / Seat info
+  doc.setTextColor(...white);
+  doc.setFontSize(12);
+  doc.text(`ROW: -`, 180, 230);
+  doc.text(`SEAT: -`, 280, 230);
+
+  // Ticket number (bottom-right before stub)
+  doc.text(`${bookingId || "100289"}`, 480, 230);
+
+  // ----- BARCODE SIDE -----
+  doc.setTextColor(...black);
+  doc.setFontSize(14);
+  doc.text(`${bookingId || "100289"}`, 620, 100, { angle: 90 });
+  doc.setFontSize(10);
+  doc.text(`${date || booking?.date || "01 NOVEMBER"} ${time || booking?.time || "18:00"}`, 640, 100, { angle: 90 });
+
+  // ----- BARCODE LINES -----
+  doc.setDrawColor(...black);
+  let x = 590;
+  for (let i = 0; i < 15; i++) {
+    doc.setLineWidth(i % 2 === 0 ? 2 : 1);
+    doc.line(x, 60, x, 240);
+    x += 5;
+  }
+
+  // ----- FOOTER -----
+  doc.setTextColor(...gold);
+  doc.setFontSize(10);
+  doc.text("Present this ticket at the entrance.", 350, 280, { align: "center" });
+
+  // Save
+  doc.save(`Ticket-${bookingId || "000000"}.pdf`);
+};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
@@ -192,3 +212,4 @@ export default function Result() {
     </div>
   );
 }
+

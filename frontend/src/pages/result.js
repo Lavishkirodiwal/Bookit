@@ -9,18 +9,31 @@ export default function Result() {
   const router = useRouter();
   const { id } = router.query;
   const [booking, setBooking] = useState(null);
+  const [experience, setExperience] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch booking details from backend
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
   useEffect(() => {
     if (!id) return;
 
     const fetchBooking = async () => {
       try {
-        const res = await fetch(`/api/booking/${id}`);
+        // 1️⃣ Fetch booking from backend
+        const res = await fetch(`${API_URL}/api/booking/${id}`);
         if (!res.ok) throw new Error("Booking not found");
         const data = await res.json();
-        setBooking(data.booking);
+        const bookingData = data.booking || data; // adjust depending on your API response
+        setBooking(bookingData);
+
+        // 2️⃣ Fetch experience details if experienceId exists
+        if (bookingData.experienceId) {
+          const expRes = await fetch(`${API_URL}/api/experiences/${bookingData.experienceId}`);
+          if (expRes.ok) {
+            const expData = await expRes.json();
+            setExperience(expData);
+          }
+        }
       } catch (error) {
         console.error(error);
         setBooking(null);
@@ -42,8 +55,7 @@ export default function Result() {
     4
   )}-${booking._id.slice(-3)}`;
 
-  const { experienceId: experience, name, email, date, time, persons, subtotal, tax, total } = booking;
-
+  const { name, email, date, time, persons, subtotal, tax, total } = booking;
 
   // Download booking ticket as PDF
   const downloadTicket = () => {
@@ -107,7 +119,7 @@ export default function Result() {
             <span className="font-semibold">Email:</span> {email || "-"}
           </p>
 
-          {/* Show pricing breakdown */}
+          {/* Pricing */}
           <hr className="my-3" />
           <p className="mb-1">
             <span className="font-semibold">Subtotal:</span>{" "}
@@ -146,15 +158,6 @@ export default function Result() {
           </button>
         </div>
       </div>
-
-      {/* Optional: Related Experiences */}
-      <div className="max-w-5xl w-full mt-10">
-        <h2 className="text-xl font-bold mb-4 text-center">
-          You Might Also Like
-        </h2>
-        {/* Render ExperienceCard components here */}
-      </div>
     </div>
   );
 }
-

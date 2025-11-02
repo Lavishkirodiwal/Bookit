@@ -1,3 +1,5 @@
+"use client";
+
 import Header from "@/components/header";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -9,12 +11,12 @@ export default function Checkout() {
   const [form, setForm] = useState({ name: "", email: "" });
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-   // 🛒 Remove an item from the cart
+  // Remove item from cart
   const handleRemove = (index) => {
     const updatedCart = cart.filter((_, i) => i !== index);
     setCart(updatedCart);
   };
-  
+
   if (!cart || cart.length === 0) {
     return (
       <>
@@ -33,47 +35,56 @@ export default function Checkout() {
     );
   }
 
+  // Calculate grand total
   const grandTotal = cart.reduce((sum, item) => sum + Number(item.total || 0), 0);
 
+  // Handle booking submission
   const handleBooking = async () => {
-  if (!form.name || !form.email) {
-    alert("Please enter your name and email to continue.");
-    return;
-  }
+    if (!form.name || !form.email) {
+      alert("Please enter your name and email to continue.");
+      return;
+    }
 
-  const bookings = cart.map(item => ({
-    name: item.name || form.name,
-    email: item.email || form.email,
-    persons: item.quantity,
-    experienceId: item._id,
-    date: item.date,
-    time: item.time,
-  }));
+    const bookings = cart.map(item => {
+      const subtotal = Number(item.total) || 0;
+      const tax = subtotal * 0.1; // 10% tax
+      const total = subtotal + tax;
 
-  try {
-    const res = await fetch(`${API_URL}/api/booking`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(bookings),
+      return {
+        name: item.name || form.name,
+        email: item.email || form.email,
+        persons: item.quantity,
+        experienceId: item._id,
+        date: item.date,
+        time: item.time,
+        subtotal,
+        tax,
+        total,
+      };
     });
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`${API_URL}/api/booking`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(bookings),
+      });
 
-    if (res.ok) {
-      setCart([]); // clear cart
-      // Redirect to result page using first booking ID
-      router.push(`/result?id=${data.bookings[0]._id}`);
-    } else {
-      alert(data.message || "Booking failed");
+      const data = await res.json();
+
+      if (res.ok) {
+        setCart([]); // clear cart
+        // Redirect to result page using first booking ID
+        router.push(`/result?id=${data.bookings[0]._id}`);
+      } else {
+        alert(data.message || "Booking failed");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Something went wrong with booking");
     }
-  } catch (error) {
-    console.error(error);
-    alert("Something went wrong with booking");
-  }
-};
+  };
 
-
-  
   return (
     <>
       <Header cartCount={cart.length} />
@@ -89,10 +100,12 @@ export default function Checkout() {
               <p><b>Date:</b> {item.date}</p>
               <p><b>Time:</b> {item.time}</p>
               <p><b>People:</b> {item.quantity}</p>
-              <p><b>Total:</b> ${Number(item.total).toFixed(2)}</p>
 
-              
-              {/* 🗑️ Remove button */}
+              <p><b>Subtotal:</b> ${Number(item.total).toFixed(2)}</p>
+              <p><b>Tax (10%):</b> ${(Number(item.total) * 0.1).toFixed(2)}</p>
+              <p className="font-semibold"><b>Total:</b> ${(Number(item.total) * 1.1).toFixed(2)}</p>
+
+              {/* Remove button */}
               <button
                 onClick={() => handleRemove(index)}
                 className="mt-2 bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded transition"
@@ -101,7 +114,10 @@ export default function Checkout() {
               </button>
             </div>
           ))}
-          <p className="text-lg font-bold mt-2">Grand Total: ${grandTotal.toFixed(2)}</p>
+
+          <p className="text-lg font-bold mt-2">
+            Grand Total: ${(grandTotal * 1.1).toFixed(2)}
+          </p>
         </div>
 
         <div className="flex flex-col space-y-4">
@@ -136,12 +152,3 @@ export default function Checkout() {
     </>
   );
 }
-
-
-
-
-
-
-
-
-

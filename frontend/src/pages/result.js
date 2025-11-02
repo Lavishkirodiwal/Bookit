@@ -42,17 +42,8 @@ export default function Result() {
     4
   )}-${booking._id.slice(-3)}`;
 
-  const {
-    experience,
-    name,
-    email,
-    date,
-    time,
-    persons,
-    subtotal,
-    tax,
-    total
-  } = booking;
+  const { experienceId: experience, name, email, date, time, persons, subtotal, tax, total } = booking;
+
 
   // Download booking ticket as PDF
   const downloadTicket = () => {
@@ -166,3 +157,4 @@ export default function Result() {
     </div>
   );
 }
+

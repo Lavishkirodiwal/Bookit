@@ -14,17 +14,37 @@ export default function Result() {
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
+  // Convert image URL to Base64 for jsPDF
+  const loadImageToBase64 = (url) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      img.setAttribute("crossOrigin", "anonymous");
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+        const dataURL = canvas.toDataURL("image/png");
+        resolve(dataURL);
+      };
+      img.onerror = (err) => reject(err);
+      img.src = url;
+    });
+
   useEffect(() => {
     if (!id) return;
 
     const fetchBooking = async () => {
       try {
+        // Fetch booking
         const res = await fetch(`${API_URL}/api/booking/${id}`);
         if (!res.ok) throw new Error("Booking not found");
         const data = await res.json();
         const bookingData = data.booking || data;
         setBooking(bookingData);
 
+        // Fetch experience if exists
         if (bookingData.experienceId) {
           const expRes = await fetch(`${API_URL}/api/experiences/${bookingData.experienceId}`);
           if (expRes.ok) {
@@ -44,72 +64,80 @@ export default function Result() {
   }, [id]);
 
   if (loading) return <p className="text-center mt-10">Loading booking...</p>;
-  if (!booking)
-    return <p className="text-center mt-10 text-red-500">Booking not found</p>;
+  if (!booking) return <p className="text-center mt-10 text-red-500">Booking not found</p>;
 
   const bookingId = `TRV-${new Date().getFullYear()}-${booking._id.slice(0, 4)}-${booking._id.slice(-3)}`;
   const { name, email, date, time, persons, subtotal, tax, total } = booking;
 
-  // =============================
-  // Ticket-style PDF generator
-  // =============================
-  const downloadTicket = () => {
-    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: [500, 250] });
+  // Royal-themed ticket generator
+  const downloadTicket = async () => {
+    const doc = new jsPDF({ orientation: "landscape", unit: "pt", format: [600, 250] });
 
     // Background
-    doc.setFillColor(250, 250, 250);
-    doc.rect(0, 0, 500, 250, "F");
+    doc.setFillColor(255, 247, 200); // golden yellow
+    doc.rect(0, 0, 600, 250, "F");
+
+    // Outer border
+    doc.setDrawColor(204, 153, 0); // dark gold
+    doc.setLineWidth(3);
+    doc.rect(10, 10, 580, 230, "S");
 
     // Header
-    doc.setFontSize(22);
-    doc.setTextColor(0, 102, 204);
-    doc.text("🎟️ Booking Ticket", 250, 40, { align: "center" });
+    doc.setFontSize(28);
+    doc.setTextColor(153, 102, 0);
+    doc.setFont("helvetica", "bold");
+    doc.text("🏰 Royal Experience Ticket 🏰", 300, 50, { align: "center" });
 
     // Divider line
-    doc.setDrawColor(0, 102, 204);
+    doc.setDrawColor(153, 102, 0);
     doc.setLineWidth(1);
-    doc.line(20, 55, 480, 55);
+    doc.line(20, 60, 580, 60);
 
-    // Booking ID Box
-    doc.setDrawColor(0, 102, 204);
-    doc.setLineWidth(1);
-    doc.rect(20, 60, 460, 30);
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`Booking ID: ${bookingId}`, 30, 80);
+    // Fort Image
+    const fortImageUrl = "https://example.com/fort.png"; // <-- replace with your fort image URL
+    try {
+      const base64Img = await loadImageToBase64(fortImageUrl);
+      doc.addImage(base64Img, "PNG", 450, 70, 120, 80);
+    } catch (err) {
+      console.error("Image failed to load", err);
+      doc.setFillColor(230, 200, 150);
+      doc.rect(450, 70, 120, 80, "F");
+      doc.setFontSize(10);
+      doc.setTextColor(100);
+      doc.text("Fort Image", 510, 110, { align: "center" });
+    }
 
-    // Experience Section
-    doc.setFontSize(16);
-    doc.setTextColor(0);
-    doc.text(experience?.title || "N/A", 250, 110, { align: "center" });
-    doc.setFontSize(12);
-    doc.setTextColor(80);
-    doc.text(`Location: ${experience?.location || "N/A"}`, 250, 130, { align: "center" });
-
-    // Details Section
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text(`Name: ${name || "-"}`, 30, 160);
-    doc.text(`Email: ${email || "-"}`, 30, 180);
-    doc.text(`Date: ${date || "-"}`, 250, 160, { align: "center" });
-    doc.text(`Time: ${time || "-"}`, 250, 180, { align: "center" });
-    doc.text(`People: ${persons || "-"}`, 400, 160);
-
-    // Pricing Section
+    // Booking details
     doc.setFontSize(14);
-    doc.setTextColor(0, 153, 0);
-    doc.text(`Total: $${total?.toFixed(2) || "-"}`, 400, 180);
+    doc.setTextColor(102, 51, 0);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Booking ID: ${bookingId}`, 30, 150);
+    doc.text(`Name: ${name || "-"}`, 30, 170);
+    doc.text(`Email: ${email || "-"}`, 30, 190);
+    doc.text(`Experience: ${experience?.title || "-"}`, 300, 150, { align: "center" });
+    doc.text(`Location: ${experience?.location || "-"}`, 300, 170, { align: "center" });
+    doc.text(`Date: ${date || "-"}`, 300, 190, { align: "center" });
+    doc.text(`Time: ${time || "-"}`, 500, 150);
+    doc.text(`People: ${persons || "-"}`, 500, 170);
 
-    // Decorative dashed line for "tear here"
+    // Total Price
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(0, 102, 0);
+    doc.text(`Total: $${total?.toFixed(2) || "-"}`, 500, 190);
+
+    // Tear line
+    doc.setDrawColor(204, 153, 0);
     doc.setLineDash([5, 5], 0);
-    doc.line(20, 210, 480, 210);
-    doc.setLineDash(); // reset dash
+    doc.line(20, 230, 580, 230);
+    doc.setLineDash();
 
+    // Footer note
     doc.setFontSize(10);
-    doc.setTextColor(120);
-    doc.text("Please present this ticket at the entrance.", 250, 230, { align: "center" });
+    doc.setTextColor(102, 51, 0);
+    doc.setFont("helvetica", "italic");
+    doc.text("Please present this ticket at the entrance. Enjoy your royal experience!", 300, 245, { align: "center" });
 
-    doc.save(`Booking-${bookingId}.pdf`);
+    doc.save(`Royal-Ticket-${bookingId}.pdf`);
   };
 
   return (

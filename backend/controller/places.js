@@ -99,13 +99,13 @@ export const createBooking = async (req, res) => {
 
 export const getBookingById = async (req, res) => {
   try {
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) {
-      return res.status(404).json({ message: "Booking not found" });
-    }
-    res.status(200).json(booking);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    const booking = await Booking.findById(req.params.id)
+      .populate("experienceId"); // <-- populate reference
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+    res.json({ booking });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -125,5 +125,6 @@ export const validatePromo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 

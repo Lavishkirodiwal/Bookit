@@ -7,11 +7,11 @@ import jsPDF from "jspdf";
 
 export default function Result() {
   const router = useRouter();
-  const { id } = router.query; // booking ID from URL
+  const { id } = router.query;
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fetch booking from backend
+  // Fetch booking details from backend
   useEffect(() => {
     if (!id) return;
 
@@ -33,14 +33,28 @@ export default function Result() {
   }, [id]);
 
   if (loading) return <p className="text-center mt-10">Loading booking...</p>;
-  if (!booking) return <p className="text-center mt-10 text-red-500">Booking not found</p>;
+  if (!booking)
+    return <p className="text-center mt-10 text-red-500">Booking not found</p>;
 
   // Generate formatted booking ID
-  const bookingId = `TRV-${new Date().getFullYear()}-${booking._id.slice(0, 4)}-${booking._id.slice(-3)}`;
+  const bookingId = `TRV-${new Date().getFullYear()}-${booking._id.slice(
+    0,
+    4
+  )}-${booking._id.slice(-3)}`;
 
-  const { experience = {}, date, time, persons, total } = booking;
+  const {
+    experience,
+    name,
+    email,
+    date,
+    time,
+    persons,
+    subtotal,
+    tax,
+    total
+  } = booking;
 
-  // Download ticket as PDF
+  // Download booking ticket as PDF
   const downloadTicket = () => {
     const doc = new jsPDF();
 
@@ -49,11 +63,16 @@ export default function Result() {
 
     doc.setFontSize(12);
     doc.text(`Booking ID: ${bookingId}`, 20, 40);
-    doc.text(`Experience: ${experience.title || "Amazing Experience"}`, 20, 50);
-    doc.text(`Date: ${date || "-"}`, 20, 60);
-    doc.text(`Time: ${time || "-"}`, 20, 70);
-    doc.text(`People: ${persons || "-"}`, 20, 80);
-    doc.text(`Total: $${total || "-"}`, 20, 90);
+    doc.text(`Name: ${name || "-"}`, 20, 50);
+    doc.text(`Email: ${email || "-"}`, 20, 60);
+    doc.text(`Experience: ${experience?.title || "N/A"}`, 20, 70);
+    doc.text(`Location: ${experience?.location || "N/A"}`, 20, 80);
+    doc.text(`Date: ${date || "-"}`, 20, 90);
+    doc.text(`Time: ${time || "-"}`, 20, 100);
+    doc.text(`People: ${persons || "-"}`, 20, 110);
+    doc.text(`Subtotal: $${subtotal?.toFixed(2) || "-"}`, 20, 120);
+    doc.text(`Tax: $${tax?.toFixed(2) || "-"}`, 20, 130);
+    doc.text(`Total: $${total?.toFixed(2) || "-"}`, 20, 140);
 
     doc.save(`Booking-${bookingId}.pdf`);
   };
@@ -61,16 +80,26 @@ export default function Result() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-lg p-8 max-w-md w-full text-center">
-        <h1 className="text-3xl font-bold mb-4 text-green-600">✅ Booking Confirmed!</h1>
-        <p className="text-gray-700 mb-6">Thank you for booking your experience with us.</p>
+        <h1 className="text-3xl font-bold mb-4 text-green-600">
+          ✅ Booking Confirmed!
+        </h1>
+        <p className="text-gray-700 mb-6">
+          Thank you for booking your experience with us.
+        </p>
 
         {/* Booking Summary */}
         <div className="mb-6 text-left border p-4 rounded bg-gray-50">
           <p className="font-semibold mb-1">
             Booking ID: <span className="text-gray-600">{bookingId}</span>
           </p>
+
           <p className="font-semibold mb-1">Experience:</p>
-          <p className="text-gray-600 mb-2">{experience.title || "Amazing Experience"}</p>
+          <p className="text-gray-600 mb-2">{experience?.title || "N/A"}</p>
+
+          {experience?.location && (
+            <p className="text-gray-600 mb-2">📍 {experience.location}</p>
+          )}
+
           <p className="mb-1">
             <span className="font-semibold">Date:</span> {date || "-"}
           </p>
@@ -80,10 +109,29 @@ export default function Result() {
           <p className="mb-1">
             <span className="font-semibold">People:</span> {persons || "-"}
           </p>
-          <p className="font-semibold text-lg mt-2">Total: ${total || "-"}</p>
+          <p className="mb-1">
+            <span className="font-semibold">Name:</span> {name || "-"}
+          </p>
+          <p className="mb-1">
+            <span className="font-semibold">Email:</span> {email || "-"}
+          </p>
+
+          {/* Show pricing breakdown */}
+          <hr className="my-3" />
+          <p className="mb-1">
+            <span className="font-semibold">Subtotal:</span>{" "}
+            ${subtotal?.toFixed(2) || "-"}
+          </p>
+          <p className="mb-1">
+            <span className="font-semibold">Tax (10%):</span>{" "}
+            ${tax?.toFixed(2) || "-"}
+          </p>
+          <p className="font-semibold text-lg mt-2 text-green-700">
+            Total: ${total?.toFixed(2) || "-"}
+          </p>
         </div>
 
-        {/* Action Buttons */}
+        {/* Buttons */}
         <div className="flex flex-col space-y-3">
           <Link
             href="/"
@@ -110,7 +158,9 @@ export default function Result() {
 
       {/* Optional: Related Experiences */}
       <div className="max-w-5xl w-full mt-10">
-        <h2 className="text-xl font-bold mb-4 text-center">You Might Also Like</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          You Might Also Like
+        </h2>
         {/* Render ExperienceCard components here */}
       </div>
     </div>

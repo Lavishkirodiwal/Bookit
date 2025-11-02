@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
-  ExperienceId: { type: mongoose.Schema.Types.ObjectId, ref: "Experiences" },
+  experienceId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Experience", // <-- reference model
+    required: true
+  },
   name: String,
   email: String,
-  age: String,
   date: String,
   time: String,
   persons: Number,
+  subtotal: Number,
+  tax: Number,
+  total: Number
 });
 
 export default mongoose.model("Booking", bookingSchema);

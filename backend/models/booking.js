@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const bookingSchema = new mongoose.Schema({
   experienceId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Experience", // <-- reference model
+    ref: "experiences", // <-- reference model
     required: true
   },
   name: String,
@@ -17,3 +17,4 @@ const bookingSchema = new mongoose.Schema({
 });
 
 export default mongoose.model("Booking", bookingSchema);
+

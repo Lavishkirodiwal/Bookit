@@ -91,7 +91,7 @@ export default function Result() {
   doc.circle(0, 260, 20, "F");
 
   // ----- LEFT IMAGE -----
-  const img = "tick.png"; // your uploaded image/logo
+  const img = "fort.png"; // your uploaded image/logo
   doc.addImage(img, "PNG", 40, 80, 100, 100);
 
   // ----- TEXT -----
@@ -212,4 +212,5 @@ export default function Result() {
     </div>
   );
 }
+
 

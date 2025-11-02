@@ -97,6 +97,19 @@ export const createBooking = async (req, res) => {
   }
 };
 
+export const getBookingById = async (req, res) => {
+  try {
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 export const validatePromo = async (req, res) => {
   const { code } = req.body;
   try {
@@ -112,4 +125,5 @@ export const validatePromo = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
